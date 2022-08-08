@@ -1,28 +1,47 @@
-# sample-mobile-app-android
+# Android Sonarcloud Sample Project
 
-* **category**: Samples
-* **copyright**: 2019 MIRACL Technologies LTD
-* **link**: https://github.com/miracl/sample-mobile-app-android
+## Configure environment variables
 
+Set environment variables in your codemagic.yaml:
 
-## Contents
-This repository contains simple demonstration mobile apps which make use of our mobile Android SDK.
+```
+SONAR_TOKEN: Encrypted(...)
+SONAR_PROJECT_KEY: Encrypted(...)
+SONAR_ORG_KEY: Encrypted(...)
+```
 
-* **Mobile App login** - located in folder [MobileAppLoginSample](MobileAppLoginSample/README.md).
-This flow is used to login into the mobile app itself.
+These values are available in your Sonarcloud account and can be encrypted in the Codemagic web app.
 
-* **Website login** - located in folder [WebsiteLoginSample](WebsiteLoginSample/README.md).
-This flow is used to log into another app using the mobile app (the oidc flow).
+## Add the Sonarcloud plugin in build.gradle
 
-* **DVS** - located in folder [DvsSample](DvsSample/README.md).
-This flow is used to configure a 'Designated Verifier Signature' app whereby the MIRACL Trust authentication server can issue secret signing keys to users and allow them to verify their transactions with multi-factor signatures.
+Add the sonarqube plugin to app/build.gradle
+```
+plugins {
+    ...
+    id "org.sonarqube" version "3.3"
+    ...
+}
+```
+## Set Sonarcloud properties in build.gradle
 
-* **Bootstrap** - located in folder [BootstrapSample](BootstrapSample/README.md).
+Set the Sonarqube properties in app/build.gradle. Change the branch as required or also set that as an environment variable.
 
-    Bootstrap codes are used to skip the customer verification when the user have already registered identity on another device. There are two flows:
-    * Bootstrap Code Registration - use an already generated bootstrap code from another device to transfer an identity to the device skipping the registration verification process
-    * Bootstrap Code Generation - generate a bootstrap code for a registered identity that could be used to transfer it to another device
+```
+sonarqube {
+    properties {
+        property "sonar.host.url", "https://sonarcloud.io"
+        property "sonar.branch", System.getenv("FCI_BRANCH")
+        property "sonar.projectKey", System.getenv("SONAR_PROJECT_KEY")
+        property "sonar.organization", System.getenv("SONAR_ORG_KEY")
+        property "sonar.branch.name", System.getenv("FCI_BRANCH")
+        property "sonar.branch.target", System.getenv("FCI_PULL_REQUEST_DEST")
+        property "sonar.login", System.getenv("SONAR_TOKEN")
+    }
+}
+```
 
-All samples use [mpinsdk.aar](https://github.com/miracl/mfa-client-sdk-android) which is located in the mpinsdk directory of the checked out repository.
+## Sonarcloud report
 
-Instructions on how to build and run each samples can be found in the README located in the folder for each sample.
+https://sonarcloud.io/dashboard?id=codemagic-ci-cd_android-sonarcloud-sample-project
+
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=codemagic-ci-cd_android-sonarcloud-sample-project&metric=alert_status)](https://sonarcloud.io/dashboard?id=codemagic-ci-cd_android-sonarcloud-sample-project)
