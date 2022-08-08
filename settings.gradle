@@ -1,1 +1,0 @@
-include ':mpinsdk', ':WebsiteLoginSample', ':MobileAppLoginSample', ':DvsSample', ':BootstrapSample'
