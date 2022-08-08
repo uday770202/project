@@ -37,7 +37,7 @@ jobs:
         build_path: target
 
     - name: Upload review result
-      if: ${{ github.event_name != 'push'}}
+      if: ${{ github.event_name != 'push' }}
       uses: github/codeql-action/upload-sarif@v1
       with:
         sarif_file: codeguru-results.sarif.json
