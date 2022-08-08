@@ -1,4 +1,9 @@
-__test__/_temp
-_temp/
-lib/
-node_modules/
+*.iml
+.gradle
+/local.properties
+**/.idea/
+.DS_Store
+/build
+/captures
+.externalNativeBuild
+/mpinsdk/build
