@@ -1,54 +1,40 @@
 name: Analyze with CodeGuru Reviewer
 
-on: [push]
-
-permissions:
-    id-token: write
-    contents: read
-    security-events: write 
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs:
   build:
-    name: Analyze with CodeGuru Reviewer
     runs-on: ubuntu-latest
     steps:
-    - name: Configure AWS credentials
-      continue-on-error: true
-      uses: aws-actions/configure-aws-credentials@v1
-      with:
-        role-to-assume: arn:aws:iam::289955253311:role/s3role
-        aws-region: us-east-2
-    
-    - uses: actions/checkout@v2
-      if: steps.iam-role.outcome == 'success'
+    - name: Checkout repository
+      uses: actions/checkout@v2
       with:
         fetch-depth: 0
-    - name: Set up JDK 1.8
-      if: steps.iam-role.outcome == 'success'
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-2  # Region to access CodeGuru 
+
+    - name: Set up JDK
       uses: actions/setup-java@v1
       with:
-        java-version: 1.8
-    - name: Build project
-      if: steps.iam-role.outcome == 'success'
-      run: mvn compile -DskipTests
+        java version: 1.8
 
-    - name: CodeGuru Reviewer
-      uses: aws-actions/codeguru-reviewer@v1.1
-      if: steps.iam-role.outcome == 'success'
-      continue-on-error: false
+    - name: Build with maven
+      run: mvn =B package --file pom.xml    
       with:          
         s3_bucket: codeguru-reviewer-93
-        build_path: ./target/classes
-
-    - name: Store SARIF file
-      if: steps.iam-role.outcome == 'success'
-      uses: actions/upload-artifact@v2
-      with:
-        name: SARIF_recommendations
-        path: ./codeguru-results.sarif.json
+        build_path: target
 
     - name: Upload review result
-      if: steps.iam-role.outcome == 'success'
+      if: ${{ github.event_name != 'push'}}
       uses: github/codeql-action/upload-sarif@v1
       with:
         sarif_file: codeguru-results.sarif.json
