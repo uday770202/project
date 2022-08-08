@@ -1,4 +1,4 @@
-name: Analyze with CodeGuru Reviewer
+name: Java CI with CodeGuru Reviewer
 
 on:
   push:
@@ -28,7 +28,10 @@ jobs:
         java version: 1.8
 
     - name: Build with maven
-      run: mvn =B package --file pom.xml    
+      run: mvn =B package --file pom.xml  
+
+    -name: CodeGuru Reviewer
+     uses: aws-actions/codeguru-reviewer@v1.1  
       with:          
         s3_bucket: codeguru-reviewer-93
         build_path: target
