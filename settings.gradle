@@ -1,2 +1,1 @@
-include ':app'
-rootProject.name = "Android Qube"
+include ':mpinsdk', ':WebsiteLoginSample', ':MobileAppLoginSample', ':DvsSample', ':BootstrapSample'
